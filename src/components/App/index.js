@@ -1,20 +1,27 @@
-import { useState } from "react";
-import ContactList from "../ContactList";
-import Modal from '../Modal';
-import './index.css';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import LoginPage from "../LoginPage";
+import ContactPage from "../ContactPage";
+import WithAuth from "../HOC/WithAuth";
 
 const App = () => {
-  const [modalIsOn, setModalIsOn] = useState(false);
-  const contactsDefaultState = localStorage.getItem("contacts") ? JSON.parse(localStorage.getItem("contacts")) : [];
-  const [contacts, setContacts] = useState(contactsDefaultState);
   return (
-    <>
-      <button onClick={() => setModalIsOn(true)} id="add-new-contact">Add Contact</button>
-      <ContactList contacts={contacts} onSetContacts={setContacts}/>
-      {modalIsOn && <Modal onSetModalIsOn={setModalIsOn} onSetContacts={setContacts} />}
-    </>
-
-  )
+    <Router>
+      <Routes>
+        <Route
+          index
+          path="/"
+          exact
+          element={
+            <WithAuth>
+              <ContactPage />
+            </WithAuth>} />
+        <Route
+          path="/login"
+          exact
+          element={<LoginPage />}
+        />
+      </Routes>
+    </Router>)
 }
 
 export default App;
