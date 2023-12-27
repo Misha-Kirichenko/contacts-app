@@ -10,8 +10,50 @@ const middlewares = jsonServer.defaults();
 
 app.use(bodyParser.json());
 app.use(middlewares);
-app.use("/contacts", verifyToken);
-app.use("/login", (req, res) => {
+
+app.delete("/contacts/:id", verifyToken, (req, res, next) => {
+  const user_id = req.user.id;
+  const { contacts } = require('./db/contacts.json');
+  const userContacts = contacts.filter(contact => contact.user_id === user_id);
+  const contactIdToDelete = parseInt(req.params.id);
+  console.log("contactIdToDelete", contactIdToDelete);
+  const isUserContact = userContacts.find(contact => contact.id === contactIdToDelete);
+  if (!isUserContact) {
+    return res.status(403).send({ msg: 'You are not allowed to delete this contact' });
+  }
+  return next();
+});
+
+
+app.post("/contacts", verifyToken);
+
+app.delete("/contacts/", verifyToken, (req, res, next) => {
+  const user_id = req.user.id;
+  const { contacts } = require('./db/contacts.json');
+  const userContacts = contacts.filter(contact => contact.user_id === user_id);
+  const { idsArr } = req.body;
+  const userContants = [];
+
+  if (!isUsersContacts) {
+    return res.status(403).send({ msg: 'You are not allowed to delete this contact' });
+  }
+  return next();
+});
+
+app.get("/contacts", verifyToken, (req, res, next) => {
+  const user_id = req.user.id;
+
+  const { contacts } = require('./db/contacts.json');
+  const userContacts = contacts.filter(contact => contact.user_id === user_id);
+
+  if (req.method === 'GET') {
+    return res.send(userContacts);
+  }
+  return next();
+});
+
+
+app.post("/login", (req, res) => {
   const { login, password } = req.body;
   if (login === "root" && password === "Default-123") {
     const token = jwt.sign({ id: 1, nickName: "root", login }, process.env.TOKEN_SECRET);
@@ -25,7 +67,7 @@ app.use("/login", (req, res) => {
 
 });
 
-app.use("/me", [verifyToken], (req, res) => {
+app.get("/me", [verifyToken], (req, res) => {
   const { id, nickName } = req.user;
   return res.send({ id, nickName });
 });

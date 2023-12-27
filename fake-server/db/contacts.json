@@ -1,5 +1,3 @@
 {
-  "contacts": [
-    {"id": 1, "name": "Ambulance", "phoneNumber": "112", "user_id": 1}
-  ]
+  "contacts": []
 }
